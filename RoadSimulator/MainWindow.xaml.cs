@@ -25,6 +25,7 @@ namespace RoadSimulator
 
         bool pauseresume=true;
         CarManager carManager;
+
         //Car start position (201,5)
         public MainWindow()
         {
