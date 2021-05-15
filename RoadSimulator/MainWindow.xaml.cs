@@ -22,8 +22,8 @@ namespace RoadSimulator
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        bool pauseresume=true;
+        //https://docs.microsoft.com/en-us/dotnet/desktop/wpf/graphics-multimedia/how-to-animate-an-object-along-a-path-matrix-animation?view=netframeworkdesktop-4.8
+        bool pauseresume =true;
         CarManager carManager;
 
         //Car start position (201,5)
@@ -33,9 +33,6 @@ namespace RoadSimulator
             this.MouseMove += MainWindow_MouseMove;
             carManager = new CarManager(MapCanvas, this);
             MapCanvas.Loaded += MapCanvas_Loaded;
-
-
-            Storyboard storyboard = (Storyboard)this.Resources["TheStoryboard"];
 
         }
 
