@@ -24,19 +24,26 @@ namespace RoadSimulator
     {
         //https://docs.microsoft.com/en-us/dotnet/desktop/wpf/graphics-multimedia/how-to-animate-an-object-along-a-path-matrix-animation?view=netframeworkdesktop-4.8
         bool pauseresume =true;
-        CarManager carManager;
+        Manager carManager;
 
         //Car start position (201,5)
         public MainWindow()
         {
             InitializeComponent();
             this.MouseMove += MainWindow_MouseMove;
-            carManager = new CarManager(MapCanvas, this);
+            carManager = new Manager(MapCanvas, this);
             MapCanvas.Loaded += MapCanvas_Loaded;
+            this.KeyDown += MainWindow_KeyDown;
 
         }
 
-       
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                new Thread(DoSomethingSmall).Start();
+            }
+        }
 
         private void MainWindow_MouseMove(object sender, MouseEventArgs e)
         {
@@ -48,11 +55,13 @@ namespace RoadSimulator
             if (pauseresume)
             {
                 carManager.PauseAllCars();
+                carManager.PauseAllTrains();
                 pauseresume = false;
             }
             else
             {
                 carManager.ResumeAllCars();
+                carManager.ResumeAllTrains();
                 pauseresume = true;
             }
            
@@ -63,7 +72,7 @@ namespace RoadSimulator
         {
 
             new Thread(DoSomething).Start();
-
+            carManager.LoadNewTrain();
 
         }
 
@@ -80,8 +89,12 @@ namespace RoadSimulator
                 });
         }
 
-
-
+        public void DoSomethingSmall()
+        {
+            this.Dispatcher.Invoke(() => {
+                carManager.LoadNewCar();
+            });
+        }
 
 
     }

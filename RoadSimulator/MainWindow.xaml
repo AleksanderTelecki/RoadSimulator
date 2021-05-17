@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="720" Width="930" ResizeMode="CanMinimize">
 
-    <Canvas x:Name="MapCanvas" MouseDown="MapCanvas_MouseDown" >
+    <Canvas x:Name="MapCanvas" MouseDown="MapCanvas_MouseDown"  >
         <Image Source="./Resources/Mapa.png" Width="{Binding Path=ActualWidth, ElementName=MapCanvas}" Height="{Binding Path=ActualHeight, ElementName=MapCanvas}" Stretch="Uniform"></Image>
     </Canvas>
 </Window>

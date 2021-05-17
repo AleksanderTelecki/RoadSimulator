@@ -20,6 +20,10 @@ namespace RoadSimulator
 
         public Image CarImage { get; set; }
 
+        public Image RightImage { get; set; }
+
+        public Image LeftImage { get; set; }
+
         public Point CarPoint { get; set; }
 
         public int CarSpeed { get; set; }
@@ -39,7 +43,7 @@ namespace RoadSimulator
 
             string BodyName = $"Car"+Guid.NewGuid().ToString().Substring(0,4);
 
-            
+
             BitmapImage bitmapImage;
             switch (rnd.Next(0,3))
             {
@@ -69,9 +73,9 @@ namespace RoadSimulator
 
 
 
+   
 
 
-           
             Thread.Sleep(20);
 
         }

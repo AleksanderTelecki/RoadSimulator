@@ -93,6 +93,26 @@ namespace RoadSimulator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap TrainLeft {
+            get {
+                object obj = ResourceManager.GetObject("TrainLeft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TrainRight {
+            get {
+                object obj = ResourceManager.GetObject("TrainRight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap YellowCar {
             get {
                 object obj = ResourceManager.GetObject("YellowCar", resourceCulture);
