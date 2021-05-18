@@ -35,7 +35,7 @@ namespace RoadSimulator
             // Create a MatrixTransform. This transform
             // will be used to move the button.
             MatrixTransform ImageMatrixTransform = new MatrixTransform();
-
+            
 
             car.CarImage.RenderTransform = ImageMatrixTransform;
 
@@ -78,7 +78,7 @@ namespace RoadSimulator
             animationPath.Figures.Add(pFigure);
 
             // Freeze the PathGeometry for performance benefits. Dont know for what 
-            animationPath.Freeze();
+            //animationPath.Freeze();
 
             // Create a MatrixAnimationUsingPath to move the
             // button along the path by animating
@@ -102,10 +102,11 @@ namespace RoadSimulator
             Storyboard pathAnimationStoryboard = new Storyboard();
             pathAnimationStoryboard.Children.Add(matrixAnimation);
             pathAnimationStoryboard.Completed += CarAnimationStoryboard_Completed;
-
+            
 
 
             car.Animator = pathAnimationStoryboard;
+            car.matrixTransform = matrixAnimation;
             pathAnimationStoryboard.Begin(mainWindow,true);
 
         
@@ -119,7 +120,8 @@ namespace RoadSimulator
             foreach (var item in Manager.CarCollection)
             {
                 var state = item.Animator.GetCurrentProgress(mainWindow);
-                
+
+
                 //Use progres value to turn car from right to left in future
                 if (state.Value==1)
                 {
@@ -174,7 +176,7 @@ namespace RoadSimulator
 
 
                     pBezierSegment.Points.Add(new Point(700, 230));
-                    pBezierSegment.Points.Add(new Point(300, 230));
+                    pBezierSegment.Points.Add(new Point(400, 230));
                     pBezierSegment.Points.Add(new Point(-100, 230));
 
                     break;
@@ -238,7 +240,7 @@ namespace RoadSimulator
             foreach (var item in Manager.TrainCollection)
             {
                 var state = item.Animator.GetCurrentProgress(mainWindow);
-
+              
                 //Use progres value to turn car from right to left in future
                 if (state.Value == 1)
                 {

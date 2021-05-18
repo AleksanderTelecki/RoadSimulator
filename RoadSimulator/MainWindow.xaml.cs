@@ -22,6 +22,7 @@ namespace RoadSimulator
     /// </summary>
     public partial class MainWindow : Window
     {
+
         //https://docs.microsoft.com/en-us/dotnet/desktop/wpf/graphics-multimedia/how-to-animate-an-object-along-a-path-matrix-animation?view=netframeworkdesktop-4.8
         bool pauseresume =true;
         Manager carManager;
@@ -29,6 +30,7 @@ namespace RoadSimulator
         //Car start position (201,5)
         public MainWindow()
         {
+            //Thread sleep to generate car
             InitializeComponent();
             this.MouseMove += MainWindow_MouseMove;
             carManager = new Manager(MapCanvas, this);
@@ -36,6 +38,7 @@ namespace RoadSimulator
             this.KeyDown += MainWindow_KeyDown;
 
         }
+
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
@@ -45,10 +48,14 @@ namespace RoadSimulator
             }
         }
 
+
+
         private void MainWindow_MouseMove(object sender, MouseEventArgs e)
         {
             this.Title = $"X:{e.GetPosition(this).X}   Y:{e.GetPosition(this).Y}";
         }
+
+
 
         private void MapCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -64,35 +71,44 @@ namespace RoadSimulator
                 carManager.ResumeAllTrains();
                 pauseresume = true;
             }
-           
-            
+
+            carManager.ChangeTime();
+
+
+
         }
 
         private void MapCanvas_Loaded(object sender, RoutedEventArgs e)
         {
+            Thread thread = new Thread(DoSomething);
+            thread.Start();
 
-            new Thread(DoSomething).Start();
+
+
             carManager.LoadNewTrain();
+            
 
         }
 
    
         public void DoSomething()
         {
+          
+            for (int i = 0; i < 6; i++)
+            {
+                Thread.Sleep(1000);
                 this.Dispatcher.Invoke(() => {
                     carManager.LoadNewCar();
-                    carManager.LoadNewCar();
-                    carManager.LoadNewCar();
-                    carManager.LoadNewCar();
-                    carManager.LoadNewCar();
-                    carManager.LoadNewCar();
                 });
+            }
+
+            DoSomethingSmall();
         }
 
         public void DoSomethingSmall()
         {
             this.Dispatcher.Invoke(() => {
-                carManager.LoadNewCar();
+                carManager.CheckAllCars();
             });
         }
 

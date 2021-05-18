@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Threading;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +24,8 @@ namespace RoadSimulator
 
         public static ObservableCollection<Train> TrainCollection { get; set; }
 
+        public DispatcherTimer timer;
+
         public Manager(Canvas ImageCanvas,MainWindow mainWindow)
         {
             MapCanvas = ImageCanvas;
@@ -30,13 +33,46 @@ namespace RoadSimulator
             pathBuilder = new PathBuilder(mainWindow,ImageCanvas);
             CarCollection = new ObservableCollection<Car>();
             TrainCollection = new ObservableCollection<Train>();
-
-
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(20);
+            timer.Tick += Timer_Tick;
 
         }
 
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            for (int i = 0; i < CarCollection.Count; i++)
+            {
 
-      
+               
+                var x =Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetX);
+                var y = Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetY);
+
+
+                for (int j = 0; j < CarCollection.Count; j++)
+                {
+
+                    if (j==i)
+                    {
+                        continue;
+                    }
+
+                    var x1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetX);
+                    var y1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetY);
+
+                    if (x == x1&&y==y1)
+                    {
+                        //CarCollection[j].Animator.SetSpeedRatio(mainWindow, double.Parse((CarCollection[i].CarSpeed + 1).ToString()) / double.Parse(CarCollection[j].CarSpeed.ToString()));
+                        CarCollection[j].Animator.SetSpeedRatio(mainWindow, 0.01);
+
+                    }
+
+
+                }
+
+
+            }
+        }
 
         public void LoadNewCar()
         {
@@ -46,10 +82,11 @@ namespace RoadSimulator
                 return;
             }
 
-            //5,201
+            //5,201 //Delete pointer in car
             Car car = new Car(new Point(0, 0));
             AddToCanvas(car);
-            car.CarSpeed = rnd.Next(5, 27);
+
+            car.CarSpeed = rnd.Next(12, 36);
             if (CarCollection.Any(x=>x.CarSpeed==car.CarSpeed)&&CarCollection.Count!=0)
             {
                 while (CarCollection.Any(x => x.CarSpeed == car.CarSpeed))
@@ -148,6 +185,27 @@ namespace RoadSimulator
         }
 
 
+        public void CheckAllCars()
+        {
+
+            timer.Start();
+
+
+           
+
+        }
+
+     
+
+        public void ChangeTime()
+        {
+            // 1 nie zmienia prędkości 
+            CarCollection[2].Animator.SetSpeedRatio(mainWindow, 0.5);
+
+
+        }
+
+
         public void ColorCange()
         {
 
@@ -192,7 +250,7 @@ namespace RoadSimulator
         }
 
 
-
+      
 
 
 

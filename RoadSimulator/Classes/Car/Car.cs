@@ -18,6 +18,8 @@ namespace RoadSimulator
 
         public Storyboard Animator;
 
+        public MatrixAnimationUsingPath matrixTransform;
+
         public Image CarImage { get; set; }
 
         public Image RightImage { get; set; }
