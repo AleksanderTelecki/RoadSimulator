@@ -28,7 +28,7 @@ namespace RoadSimulator
 
         public Point CarPoint { get; set; }
 
-        public int CarSpeed { get; set; }
+        public double CarSpeed { get; set; }
 
 
         public Car(Point CPoint)

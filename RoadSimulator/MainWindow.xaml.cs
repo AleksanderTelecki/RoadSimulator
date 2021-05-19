@@ -72,7 +72,7 @@ namespace RoadSimulator
                 pauseresume = true;
             }
 
-            carManager.ChangeTime();
+            //carManager.ChangeTime();
 
 
 
@@ -93,7 +93,11 @@ namespace RoadSimulator
    
         public void DoSomething()
         {
-          
+            this.Dispatcher.Invoke(() =>
+            {
+                carManager.CheckAllCars();
+            });
+
             for (int i = 0; i < 6; i++)
             {
                 Thread.Sleep(1000);
@@ -102,13 +106,13 @@ namespace RoadSimulator
                 });
             }
 
-            DoSomethingSmall();
+           
         }
 
         public void DoSomethingSmall()
         {
             this.Dispatcher.Invoke(() => {
-                carManager.CheckAllCars();
+                carManager.LoadNewCar();
             });
         }
 

@@ -32,11 +32,23 @@ namespace RoadSimulator
             this.mainWindow = mainWindow;
             pathBuilder = new PathBuilder(mainWindow,ImageCanvas);
             CarCollection = new ObservableCollection<Car>();
+            CarCollection.CollectionChanged += CarCollection_CollectionChanged;
+
             TrainCollection = new ObservableCollection<Train>();
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(20);
+            timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Tick += Timer_Tick;
 
+        }
+
+        private void CarCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (CarCollection.Count==0)
+            {
+
+                timer.Stop();
+
+            }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -60,10 +72,19 @@ namespace RoadSimulator
                     var x1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetX);
                     var y1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetY);
 
-                    if (x == x1&&y==y1)
+                
+
+                    if (((x1 - x) <= 60 && (x1 - x) >= 0) && (((y1 - y) <= 110|| (y - y1) <= 110) && (y1 - y) >= 0))
                     {
-                        //CarCollection[j].Animator.SetSpeedRatio(mainWindow, double.Parse((CarCollection[i].CarSpeed + 1).ToString()) / double.Parse(CarCollection[j].CarSpeed.ToString()));
-                        CarCollection[j].Animator.SetSpeedRatio(mainWindow, 0.01);
+
+                        if (CarCollection[j].CarSpeed < CarCollection[i].CarSpeed)
+                        {
+
+                            CarCollection[i].CarSpeed = CarCollection[j].CarSpeed - CarCollection[j].CarSpeed / 20;
+                            CarCollection[i].Animator.SetSpeedRatio(mainWindow,CarCollection[i].CarSpeed);
+                            
+                        }
+
 
                     }
 
@@ -86,14 +107,36 @@ namespace RoadSimulator
             Car car = new Car(new Point(0, 0));
             AddToCanvas(car);
 
-            car.CarSpeed = rnd.Next(12, 36);
-            if (CarCollection.Any(x=>x.CarSpeed==car.CarSpeed)&&CarCollection.Count!=0)
+            //car.CarSpeed = rnd.Next(12, 36);
+            //if (CarCollection.Any(x=>x.CarSpeed==car.CarSpeed)&&CarCollection.Count!=0)
+            //{
+            //    while (CarCollection.Any(x => x.CarSpeed == car.CarSpeed))
+            //    {
+            //        car.CarSpeed = rnd.Next(12, 36);
+            //    }
+            //}
+
+            car.CarSpeed = rnd.NextDouble();
+            if (car.CarSpeed < 0.4)
+            {
+                car.CarSpeed += 0.4;
+            }
+
+            if (CarCollection.Any(x => x.CarSpeed == car.CarSpeed) && CarCollection.Count != 0)
             {
                 while (CarCollection.Any(x => x.CarSpeed == car.CarSpeed))
                 {
-                    car.CarSpeed = rnd.Next(7, 27);
+
+                   
+                    car.CarSpeed = rnd.NextDouble();
+                    if (car.CarSpeed<0.4)
+                    {
+                        car.CarSpeed += 0.4;
+                    }
                 }
             }
+
+
             CarCollection.Add(car);
             pathBuilder.MoveCarMatrix(car);
           

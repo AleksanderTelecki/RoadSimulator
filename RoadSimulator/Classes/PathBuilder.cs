@@ -89,7 +89,7 @@ namespace RoadSimulator
             // Set IsOffsetCumulative to true so that the animation
             // values accumulate when its repeats.
             matrixAnimation.IsOffsetCumulative = true;
-            matrixAnimation.Duration = TimeSpan.FromSeconds(car.CarSpeed);
+            matrixAnimation.Duration = TimeSpan.FromSeconds(9);////-------------------------------------------------------------------------
             //matrixAnimation.RepeatBehavior = new RepeatBehavior(2);
 
             // Set the animation to target the Matrix property
@@ -102,15 +102,15 @@ namespace RoadSimulator
             Storyboard pathAnimationStoryboard = new Storyboard();
             pathAnimationStoryboard.Children.Add(matrixAnimation);
             pathAnimationStoryboard.Completed += CarAnimationStoryboard_Completed;
-            
 
 
+           
             car.Animator = pathAnimationStoryboard;
             car.matrixTransform = matrixAnimation;
             pathAnimationStoryboard.Begin(mainWindow,true);
+            pathAnimationStoryboard.SetSpeedRatio(mainWindow, car.CarSpeed);////------------------------------------------------------------------
 
-        
-            
+
 
         }
 
