@@ -31,9 +31,8 @@ namespace RoadSimulator
         public double CarSpeed { get; set; }
 
 
-        public Car(Point CPoint)
+        public Car()
         {
-            this.CarPoint = CPoint;
             RandomiseCar();
         }
 
@@ -84,19 +83,6 @@ namespace RoadSimulator
 
 
        
-
-        public void Stop()
-        {
-
-
-        }
-
-        public void Destroy()
-        {
-
-
-
-        }
 
        
         

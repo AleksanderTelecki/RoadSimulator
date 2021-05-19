@@ -128,6 +128,7 @@ namespace RoadSimulator
                     item.Animator.Stop(mainWindow);
                     item.CarImage.Visibility = Visibility.Hidden;
                     Manager.CarCollection.Remove(item);
+                    //Add canvas remove children!!!!!!!!!!!!!!!!
                     break;
                 }
                
@@ -247,6 +248,7 @@ namespace RoadSimulator
                     item.Animator.Stop(mainWindow);
                     item.TrainImage.Visibility = Visibility.Hidden;
                     Manager.TrainCollection.Remove(item);
+                    //Add canvas remove children!!!!!!!!!!!!!!!!
                     break;
                 }
 

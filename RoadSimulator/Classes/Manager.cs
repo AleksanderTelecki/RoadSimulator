@@ -49,6 +49,12 @@ namespace RoadSimulator
                 timer.Stop();
 
             }
+            else if(CarCollection.Count==1)
+            {
+
+                timer.Start();
+
+            }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -104,17 +110,9 @@ namespace RoadSimulator
             }
 
             //5,201 //Delete pointer in car
-            Car car = new Car(new Point(0, 0));
+            Car car = new Car();
             AddToCanvas(car);
 
-            //car.CarSpeed = rnd.Next(12, 36);
-            //if (CarCollection.Any(x=>x.CarSpeed==car.CarSpeed)&&CarCollection.Count!=0)
-            //{
-            //    while (CarCollection.Any(x => x.CarSpeed == car.CarSpeed))
-            //    {
-            //        car.CarSpeed = rnd.Next(12, 36);
-            //    }
-            //}
 
             car.CarSpeed = rnd.NextDouble();
             if (car.CarSpeed < 0.4)
@@ -153,7 +151,7 @@ namespace RoadSimulator
             }
 
 
-            Train train = new Train(new Point(0, 0));
+            Train train = new Train();
             AddToCanvas(train);
             train.TrainSpeed = rnd.Next(8, 27);
             if (TrainCollection.Any(x => train.TrainSpeed == train.TrainSpeed) && TrainCollection.Count != 0)
@@ -170,29 +168,22 @@ namespace RoadSimulator
 
         }
 
-        public Car GetLoadedCar()
-        {
-            Car car = new Car(new Point(0, 0));
-            AddToCanvas(car);
-            return car;
-        }
-
 
 
         public void AddToCanvas(Car car)
         {
             
             MapCanvas.Children.Add(car.CarImage);
-            Canvas.SetTop(car.CarImage, car.CarPoint.Y);
-            Canvas.SetLeft(car.CarImage, car.CarPoint.X);
+            Canvas.SetTop(car.CarImage,  0);
+            Canvas.SetLeft(car.CarImage, 0);
         }
 
         public void AddToCanvas(Train train)
         {
 
             MapCanvas.Children.Add(train.TrainImage);
-            Canvas.SetTop(train.TrainImage, train.TrainPoint.Y);
-            Canvas.SetLeft(train.TrainImage, train.TrainPoint.X);
+            Canvas.SetTop(train.TrainImage,  0);
+            Canvas.SetLeft(train.TrainImage, 0);
         }
 
         public void PauseAllCars()
@@ -227,26 +218,6 @@ namespace RoadSimulator
 
         }
 
-
-        public void CheckAllCars()
-        {
-
-            timer.Start();
-
-
-           
-
-        }
-
-     
-
-        public void ChangeTime()
-        {
-            // 1 nie zmienia prędkości 
-            CarCollection[2].Animator.SetSpeedRatio(mainWindow, 0.5);
-
-
-        }
 
 
         public void ColorCange()

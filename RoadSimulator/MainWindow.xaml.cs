@@ -30,7 +30,6 @@ namespace RoadSimulator
         //Car start position (201,5)
         public MainWindow()
         {
-            //Thread sleep to generate car
             InitializeComponent();
             this.MouseMove += MainWindow_MouseMove;
             carManager = new Manager(MapCanvas, this);
@@ -72,7 +71,7 @@ namespace RoadSimulator
                 pauseresume = true;
             }
 
-            //carManager.ChangeTime();
+          
 
 
 
@@ -93,11 +92,6 @@ namespace RoadSimulator
    
         public void DoSomething()
         {
-            this.Dispatcher.Invoke(() =>
-            {
-                carManager.CheckAllCars();
-            });
-
             for (int i = 0; i < 6; i++)
             {
                 Thread.Sleep(1000);

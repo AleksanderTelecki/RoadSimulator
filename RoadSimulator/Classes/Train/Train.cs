@@ -28,9 +28,8 @@ namespace RoadSimulator.Classes.Train
         public int TrainSpeed { get; set; }
 
 
-        public Train(Point CPoint)
+        public Train()
         {
-            this.TrainPoint = CPoint;
             RandomiseTrain();
         }
 
