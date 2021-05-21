@@ -66,6 +66,19 @@ namespace RoadSimulator
                 var x =Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetX);
                 var y = Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetY);
 
+                var state = CarCollection[i].Animator.GetCurrentProgress(mainWindow);
+
+                if (state.Value > 0.27&& state.Value < 0.31 && CarCollection[i].IsRight)
+                {
+                    CarCollection[i].FlipCar();
+                }
+                else if (state.Value > 0.57 && !CarCollection[i].IsRight)
+                {
+                    CarCollection[i].FlipCar();
+                }
+
+
+
 
                 for (int j = 0; j < CarCollection.Count; j++)
                 {
@@ -80,7 +93,7 @@ namespace RoadSimulator
 
                 
 
-                    if (((x1 - x) <= 60 && (x1 - x) >= 0) && (((y1 - y) <= 110|| (y - y1) <= 110) && (y1 - y) >= 0))
+                    if (((x1 - x) <= 50 && (x1 - x) >= 0) && (((y1 - y) <= 110|| (y - y1) <= 110) && (y1 - y) >= 0))
                     {
 
                         if (CarCollection[j].CarSpeed < CarCollection[i].CarSpeed)

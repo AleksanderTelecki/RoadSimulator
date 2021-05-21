@@ -22,9 +22,9 @@ namespace RoadSimulator
 
         public Image CarImage { get; set; }
 
-        public Image RightImage { get; set; }
+        public bool IsRight { get; set; }
 
-        public Image LeftImage { get; set; }
+        public string Color { get; set; }
 
         public Point CarPoint { get; set; }
 
@@ -33,6 +33,7 @@ namespace RoadSimulator
 
         public Car()
         {
+            IsRight = true;
             RandomiseCar();
         }
 
@@ -49,13 +50,16 @@ namespace RoadSimulator
             switch (rnd.Next(0,3))
             {
                 case 0:
-                    bitmapImage = new BitmapImage(new Uri("./Resources/BlueCar.png", UriKind.Relative));
+                    bitmapImage = new BitmapImage(new Uri("./Resources/BlueCarRight.png", UriKind.Relative));
+                    Color = "Blue";
                     break;
                 case 1:
-                    bitmapImage = new BitmapImage(new Uri("./Resources/RedCar.png", UriKind.Relative));
+                    bitmapImage = new BitmapImage(new Uri("./Resources/RedCarRight.png", UriKind.Relative));
+                    Color = "Red";
                     break;
                 case 2:
-                    bitmapImage = new BitmapImage(new Uri("./Resources/YellowCar.png", UriKind.Relative));
+                    bitmapImage = new BitmapImage(new Uri("./Resources/YellowCarRight.png", UriKind.Relative));
+                    Color = "Yellow";
                     break;
                 default:
                     throw new Exception();
@@ -81,7 +85,27 @@ namespace RoadSimulator
 
         }
 
+        public void FlipCar()
+        {
+            BitmapImage bitmapImage;
+            switch (IsRight)
+            {
+                case true:
+                    bitmapImage = new BitmapImage(new Uri($"./Resources/{Color}CarLeft.png", UriKind.Relative));
+                    IsRight = false;
+                    break;
+                case false:
+                    bitmapImage = new BitmapImage(new Uri($"./Resources/{Color}CarRight.png", UriKind.Relative));
+                    IsRight = true;
+                    break;
+                default:
+                    bitmapImage = new BitmapImage(new Uri("./Resources/Mapa.png", UriKind.Relative));
+                    break;
+            }
 
+            CarImage.Source = bitmapImage;
+
+        }
        
 
        

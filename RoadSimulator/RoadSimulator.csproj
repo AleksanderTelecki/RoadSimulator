@@ -103,15 +103,24 @@
     <Resource Include="Resources\TrainLeft.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\BlueCar.png" />
+    <Resource Include="Resources\BlueCarLeft.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Mapa.png" />
-    <Resource Include="Resources\RedCar.png" />
-    <Resource Include="Resources\YellowCar.png" />
+    <Resource Include="Resources\RedCarLeft.png" />
+    <Resource Include="Resources\YellowCarLeft.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\TrainRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\BlueCarRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\RedCarRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\YellowCarRight.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

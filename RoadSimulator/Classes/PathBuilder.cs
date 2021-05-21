@@ -103,8 +103,6 @@ namespace RoadSimulator
             pathAnimationStoryboard.Children.Add(matrixAnimation);
             pathAnimationStoryboard.Completed += CarAnimationStoryboard_Completed;
 
-
-           
             car.Animator = pathAnimationStoryboard;
             car.matrixTransform = matrixAnimation;
             pathAnimationStoryboard.Begin(mainWindow,true);
