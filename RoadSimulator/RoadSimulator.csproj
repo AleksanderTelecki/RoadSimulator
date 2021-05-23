@@ -122,5 +122,17 @@
   <ItemGroup>
     <Resource Include="Resources\YellowCarRight.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\GateCloseLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\GateCloseRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\GateOpenLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\GateOpenRight.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

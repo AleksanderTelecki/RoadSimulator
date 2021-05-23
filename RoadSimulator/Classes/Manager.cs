@@ -196,6 +196,7 @@ namespace RoadSimulator
 
             MapCanvas.Children.Add(train.TrainImage);
             Canvas.SetTop(train.TrainImage,  0);
+            Canvas.SetZIndex(train.TrainImage, 1);
             Canvas.SetLeft(train.TrainImage, 0);
         }
 
