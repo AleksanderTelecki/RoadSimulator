@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RoadSimulator.Classes.TrafficTools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,10 @@ namespace RoadSimulator
             MapCanvas.Loaded += MapCanvas_Loaded;
             this.KeyDown += MainWindow_KeyDown;
 
+            TrafficLights.MainWindow = this;
+            RailwayGates.MainWindow = this;
+
+
         }
 
 
@@ -63,16 +68,18 @@ namespace RoadSimulator
                 carManager.PauseAllCars();
                 carManager.PauseAllTrains();
                 pauseresume = false;
+                RailwayGates.CloseGates();
             }
             else
             {
                 carManager.ResumeAllCars();
                 carManager.ResumeAllTrains();
                 pauseresume = true;
+                RailwayGates.OpenGates();
             }
 
           
-
+            
 
 
         }

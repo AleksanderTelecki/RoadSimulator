@@ -66,6 +66,8 @@
     </Compile>
     <Compile Include="Classes\Car\Car.cs" />
     <Compile Include="Classes\Manager.cs" />
+    <Compile Include="Classes\TrafficTools\RailwayGates.cs" />
+    <Compile Include="Classes\TrafficTools\TrafficLights.cs" />
     <Compile Include="Classes\Train\Train.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

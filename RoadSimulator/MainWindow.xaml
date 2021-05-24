@@ -12,10 +12,10 @@
         <Image Name="RightGates" Panel.ZIndex="1"  Source="./Resources/GateOpenRight.png" Width="130" Height="100" Canvas.Left="605" Canvas.Top="163" />
         <Image Name="LeftGates" Panel.ZIndex="2"  Source="./Resources/GateOpenLeft.png" Width="130" Height="100" Canvas.Left="688" Canvas.Top="226" />
 
-        <Ellipse Width="7" Height="7" Panel.ZIndex="2"  Fill="LimeGreen"  x:Name="ELeft_RightGates" Canvas.Left="623" Canvas.Top="197.7"/>
+        <Ellipse Width="7" Height="7" Panel.ZIndex="2"  Fill="Black"  x:Name="ELeft_RightGates" Canvas.Left="623" Canvas.Top="197.7"/>
         <Ellipse Width="7" Height="7" Panel.ZIndex="2" Fill="LimeGreen"  x:Name="ERight_RightGates" Canvas.Left="637.6" Canvas.Top="197.8"/>
         <Ellipse Width="8" Height="7" Panel.ZIndex="2" Fill="LimeGreen" x:Name="ELeft_LeftGates" Canvas.Left="778" Canvas.Top="260.4"/>
-        <Ellipse Width="7" Height="7" Panel.ZIndex="2" Fill="LimeGreen" x:Name="ERight_LeftGates" Canvas.Left="791.6" Canvas.Top="260"/>
+        <Ellipse Width="7" Height="7" Panel.ZIndex="2" Fill="Black" x:Name="ERight_LeftGates" Canvas.Left="791.6" Canvas.Top="260"/>
 
     </Canvas>
 </Window>
