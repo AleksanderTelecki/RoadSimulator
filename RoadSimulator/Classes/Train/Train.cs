@@ -25,7 +25,7 @@ namespace RoadSimulator.Classes.Train
 
         public Point TrainPoint { get; set; }
 
-        public int TrainSpeed { get; set; }
+        public double TrainSpeed { get; set; }
 
 
         public Train()

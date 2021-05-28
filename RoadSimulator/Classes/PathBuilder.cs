@@ -210,7 +210,7 @@ namespace RoadSimulator
             // Set IsOffsetCumulative to true so that the animation
             // values accumulate when its repeats.
             matrixAnimation.IsOffsetCumulative = true;
-            matrixAnimation.Duration = TimeSpan.FromSeconds(train.TrainSpeed);
+            matrixAnimation.Duration = TimeSpan.FromSeconds(5);//-----------------------
             //matrixAnimation.RepeatBehavior = new RepeatBehavior(2);
 
             // Set the animation to target the Matrix property
@@ -228,7 +228,7 @@ namespace RoadSimulator
 
             train.Animator = pathAnimationStoryboard;
             pathAnimationStoryboard.Begin(mainWindow, true);
-
+            pathAnimationStoryboard.SetSpeedRatio(mainWindow, train.TrainSpeed);//------------
 
 
 

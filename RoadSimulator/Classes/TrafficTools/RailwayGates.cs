@@ -11,13 +11,14 @@ namespace RoadSimulator.Classes.TrafficTools
     {
 
         public static MainWindow MainWindow { get; set; }
-
+        public static bool IsClosed;
 
         public static void CloseGates()
         {
             MainWindow.RightGates.Source = new BitmapImage(new Uri("./Resources/GateCloseRight.png", UriKind.Relative));
             MainWindow.LeftGates.Source = new BitmapImage(new Uri("./Resources/GateCloseLeft.png", UriKind.Relative));
             TrafficLights.SetRed();
+            IsClosed = true;
 
         }
 
@@ -26,7 +27,7 @@ namespace RoadSimulator.Classes.TrafficTools
             MainWindow.RightGates.Source = new BitmapImage(new Uri("./Resources/GateOpenRight.png", UriKind.Relative));
             MainWindow.LeftGates.Source = new BitmapImage(new Uri("./Resources/GateOpenLeft.png", UriKind.Relative));
             TrafficLights.SetGreen();
-
+            IsClosed = false;
         }
 
 

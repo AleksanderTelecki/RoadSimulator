@@ -10,6 +10,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Threading;
+using RoadSimulator.Classes.TrafficTools;
 
 namespace RoadSimulator
 {
@@ -24,21 +26,51 @@ namespace RoadSimulator
 
         public static ObservableCollection<Train> TrainCollection { get; set; }
 
-        public DispatcherTimer timer;
+        public DispatcherTimer CarTimer;
+
+
+        private static Mutex TrainMutex = new Mutex();
+        private static Mutex CarMutex = new Mutex();
+
 
         public Manager(Canvas ImageCanvas,MainWindow mainWindow)
         {
+
+
             MapCanvas = ImageCanvas;
             this.mainWindow = mainWindow;
+
             pathBuilder = new PathBuilder(mainWindow,ImageCanvas);
+
             CarCollection = new ObservableCollection<Car>();
             CarCollection.CollectionChanged += CarCollection_CollectionChanged;
-
             TrainCollection = new ObservableCollection<Train>();
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(100);
-            timer.Tick += Timer_Tick;
+            TrainCollection.CollectionChanged += TrainCollection_CollectionChanged;
 
+            CarTimer = new DispatcherTimer();
+            CarTimer.Interval = TimeSpan.FromMilliseconds(100);
+            CarTimer.Tick += CarTimer_Tick;
+
+
+
+
+        }
+
+     
+
+        private void TrainCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (TrainCollection.Count == 0)
+            {
+                RailwayGates.OpenGates();
+                new Thread(DisplayTrain).Start();
+
+            }
+            else if (TrainCollection.Count == 1)
+            {
+                RailwayGates.CloseGates();
+
+            }
         }
 
         private void CarCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -46,75 +78,95 @@ namespace RoadSimulator
             if (CarCollection.Count==0)
             {
 
-                timer.Stop();
+                CarTimer.Stop();
+               
 
             }
             else if(CarCollection.Count==1)
             {
 
-                timer.Start();
+                CarTimer.Start();
 
             }
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+     
+
+        private void CarTimer_Tick(object sender, EventArgs e)
         {
             for (int i = 0; i < CarCollection.Count; i++)
             {
 
                
+
                 var x =Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetX);
                 var y = Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetY);
 
                 var state = CarCollection[i].Animator.GetCurrentProgress(mainWindow);
 
-                if (state.Value > 0.27&& state.Value < 0.31 && CarCollection[i].IsRight)
+
+                if (RailwayGates.IsClosed && state.Value < 0.27 && state.Value>0.23)
                 {
-                    CarCollection[i].FlipCar();
+                    CarCollection[i].Animator.SetSpeedRatio(mainWindow, 0);
+                    CarCollection[i].Stopped = true;
                 }
-                else if (state.Value > 0.57 && !CarCollection[i].IsRight)
+                else 
                 {
-                    CarCollection[i].FlipCar();
-                }
-
-
-
-
-                for (int j = 0; j < CarCollection.Count; j++)
-                {
-
-                    if (j==i)
+                    if (CarCollection[i].Stopped==true)
                     {
-                        continue;
+                        CarCollection[i].Stopped = false;
+                        CarCollection[i].Animator.SetSpeedRatio(mainWindow, CarCollection[i].CarSpeed);
                     }
 
-                    var x1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetX);
-                    var y1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetY);
 
-                
+                    if (state.Value > 0.27 && state.Value < 0.31 && CarCollection[i].IsRight)
+                    {
+                        CarCollection[i].FlipCar();
+                    }
+                    else if (state.Value > 0.57 && !CarCollection[i].IsRight)
+                    {
+                        CarCollection[i].FlipCar();
+                    }
 
-                    if (((x1 - x) <= 50 && (x1 - x) >= 0) && (((y1 - y) <= 110|| (y - y1) <= 110) && (y1 - y) >= 0))
+
+
+
+                    for (int j = 0; j < CarCollection.Count; j++)
                     {
 
-                        if (CarCollection[j].CarSpeed < CarCollection[i].CarSpeed)
+                        if (j == i)
+                        {
+                            continue;
+                        }
+
+                        var x1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetX);
+                        var y1 = Math.Round(CarCollection[j].CarImage.RenderTransform.Value.OffsetY);
+
+
+
+                        if (((x1 - x) <= 50 && (x1 - x) >= 0) && (((y1 - y) <= 110 || (y - y1) <= 110) && (y1 - y) >= 0))
                         {
 
-                            CarCollection[i].CarSpeed = CarCollection[j].CarSpeed - CarCollection[j].CarSpeed / 20;
-                            CarCollection[i].Animator.SetSpeedRatio(mainWindow,CarCollection[i].CarSpeed);
-                            
+                            if (CarCollection[j].CarSpeed < CarCollection[i].CarSpeed|| CarCollection[j].Stopped)
+                            {
+
+                                CarCollection[i].CarSpeed = CarCollection[j].CarSpeed - CarCollection[j].CarSpeed / 20;
+                                CarCollection[i].Animator.SetSpeedRatio(mainWindow, CarCollection[j].Stopped?0:CarCollection[i].CarSpeed);
+                                CarCollection[i].Stopped = true;
+
+                            }
+
+
                         }
 
 
                     }
 
-
                 }
-
-
             }
         }
 
-        public void LoadNewCar()
+        public void LoadCar()
         {
             
             if (CarCollection.Count>=20)
@@ -122,7 +174,7 @@ namespace RoadSimulator
                 return;
             }
 
-            //5,201 //Delete pointer in car
+           
             Car car = new Car();
             AddToCanvas(car);
 
@@ -155,28 +207,42 @@ namespace RoadSimulator
 
         }
 
-        public void LoadNewTrain()
+        public void LoadTrain()
         {
 
-            if (TrainCollection.Count >= 3)
+
+
+            if (TrainCollection.Count == 1)
             {
                 return;
             }
 
-
             Train train = new Train();
+            
             AddToCanvas(train);
-            train.TrainSpeed = rnd.Next(8, 27);
-            if (TrainCollection.Any(x => train.TrainSpeed == train.TrainSpeed) && TrainCollection.Count != 0)
+
+            train.TrainSpeed = rnd.NextDouble();
+            if (train.TrainSpeed < 0.7)
             {
-                while (TrainCollection.Any(x => x.TrainSpeed == train.TrainSpeed))
+                train.TrainSpeed += 0.7;
+            }
+
+            if (CarCollection.Any(x => x.CarSpeed == train.TrainSpeed) && CarCollection.Count != 0)
+            {
+                while (CarCollection.Any(x => x.CarSpeed == train.TrainSpeed))
                 {
-                    train.TrainSpeed = rnd.Next(7, 27);
+
+
+                    train.TrainSpeed = rnd.NextDouble();
+                    if (train.TrainSpeed < 0.7)
+                    {
+                        train.TrainSpeed += 0.7;
+                    }
                 }
             }
+
             TrainCollection.Add(train);
             pathBuilder.MoveTrainMatrix(train);
-
 
 
         }
@@ -234,17 +300,6 @@ namespace RoadSimulator
 
 
 
-        public void ColorCange()
-        {
-
-            foreach (var item in CarCollection)
-            {
-                item.CarImage.Source = new BitmapImage(new Uri("./Resources/YellowCar.png", UriKind.Relative));
-            }
-
-
-        }
-
         public void ResumeAllCars()
         {
 
@@ -278,7 +333,39 @@ namespace RoadSimulator
         }
 
 
-      
+        public void DisplayCar()
+        {
+            CarMutex.WaitOne();
+
+            mainWindow.Dispatcher.Invoke(() => {
+                LoadCar();
+            });
+            Thread.Sleep(1000);
+            CarMutex.ReleaseMutex();
+
+
+        }
+
+        public void DisplayTrain()
+        {
+            Thread.Sleep(5000);
+            mainWindow.Dispatcher.Invoke(() => {
+                RailwayGates.CloseGates();
+            });
+            Thread.Sleep(2000);
+            TrainMutex.WaitOne();
+
+            mainWindow.Dispatcher.Invoke(() => {
+                LoadTrain();
+            });
+           
+            TrainMutex.ReleaseMutex();
+
+
+        }
+
+
+
 
 
 

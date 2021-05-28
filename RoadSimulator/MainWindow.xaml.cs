@@ -26,16 +26,16 @@ namespace RoadSimulator
 
         //https://docs.microsoft.com/en-us/dotnet/desktop/wpf/graphics-multimedia/how-to-animate-an-object-along-a-path-matrix-animation?view=netframeworkdesktop-4.8
         bool pauseresume =true;
-        Manager carManager;
+        Manager _Manager;
 
-        //Car start position (201,5)
         public MainWindow()
         {
             InitializeComponent();
             this.MouseMove += MainWindow_MouseMove;
-            carManager = new Manager(MapCanvas, this);
+            _Manager = new Manager(MapCanvas, this);
             MapCanvas.Loaded += MapCanvas_Loaded;
             this.KeyDown += MainWindow_KeyDown;
+
 
             TrafficLights.MainWindow = this;
             RailwayGates.MainWindow = this;
@@ -48,7 +48,7 @@ namespace RoadSimulator
         {
             if (e.Key == Key.Space)
             {
-                new Thread(DoSomethingSmall).Start();
+                new Thread(_Manager.DisplayCar).Start();
             }
         }
 
@@ -65,17 +65,15 @@ namespace RoadSimulator
         {
             if (pauseresume)
             {
-                carManager.PauseAllCars();
-                carManager.PauseAllTrains();
+                _Manager.PauseAllCars();
+                _Manager.PauseAllTrains();
                 pauseresume = false;
-                RailwayGates.CloseGates();
             }
             else
             {
-                carManager.ResumeAllCars();
-                carManager.ResumeAllTrains();
+                _Manager.ResumeAllCars();
+                _Manager.ResumeAllTrains();
                 pauseresume = true;
-                RailwayGates.OpenGates();
             }
 
           
@@ -86,36 +84,27 @@ namespace RoadSimulator
 
         private void MapCanvas_Loaded(object sender, RoutedEventArgs e)
         {
-            Thread thread = new Thread(DoSomething);
-            thread.Start();
 
 
-
-            carManager.LoadNewTrain();
-            
-
-        }
-
-   
-        public void DoSomething()
-        {
             for (int i = 0; i < 6; i++)
             {
-                Thread.Sleep(1000);
-                this.Dispatcher.Invoke(() => {
-                    carManager.LoadNewCar();
-                });
+                Thread car = new Thread(_Manager.DisplayCar);
+                car.Start();
+
             }
 
-           
+            Thread train = new Thread(_Manager.DisplayTrain);
+            train.Start();
+
+
+
         }
 
-        public void DoSomethingSmall()
-        {
-            this.Dispatcher.Invoke(() => {
-                carManager.LoadNewCar();
-            });
-        }
+
+      
+
+
+
 
 
     }

@@ -30,6 +30,8 @@ namespace RoadSimulator
 
         public double CarSpeed { get; set; }
 
+        public bool Stopped = false;
+
 
         public Car()
         {
