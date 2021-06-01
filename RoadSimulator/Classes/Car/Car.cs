@@ -39,16 +39,16 @@ namespace RoadSimulator
             RandomiseCar();
         }
 
-
+        /// <summary>
+        /// metoda sluzy losowemu wybraniu i stworzeniu obrazka dla instancji klasy Car
+        /// </summary>
         private void RandomiseCar()
         {
-
-
-
+            //nadanie ID obrazkowi instancji klasy Car
             string BodyName = $"Car"+Guid.NewGuid().ToString().Substring(0,4);
 
-
             BitmapImage bitmapImage;
+            //losowanie koloru samochodzika
             switch (rnd.Next(0,3))
             {
                 case 0:
@@ -67,9 +67,7 @@ namespace RoadSimulator
                     throw new Exception();
                     
             }
-
-
-
+            //ustalenie parametrow obrazka dla instancji klasy Car
             CarImage = new Image
             {
                 Name = BodyName,
@@ -78,16 +76,12 @@ namespace RoadSimulator
                 Width = 40,
             };
 
-            
-
-
-   
-
-
+            //uspienie watku by losowanie koloru samochodzika mialo sens
             Thread.Sleep(20);
-
         }
-
+        /// <summary>
+        /// metoda zamienia obrazek samochodzika na jego lustrzane odbicie
+        /// </summary>
         public void FlipCar()
         {
             BitmapImage bitmapImage;
@@ -107,16 +101,7 @@ namespace RoadSimulator
             }
 
             CarImage.Source = bitmapImage;
-
-        }
-       
-
-       
-        
-
-
-
-
+        }      
 
     }
 }
