@@ -55,6 +55,7 @@ namespace RoadSimulator
             RailwayGates.MainWindow = this;
         }
 
+        // TODO: usunac metode KeyDown 
         /// <summary>
         /// metoda dodaje nowy samochod sterowany przez osobny watek na canvas 
         /// </summary>
@@ -68,6 +69,7 @@ namespace RoadSimulator
             }
         }
 
+        // TODO: usunac metode KMouseMove
         /// <summary>
         /// metoda wyswietla wspolrzedne polozenia kursora na canvasie jako wlasciwosc MainWindow.Title
         /// </summary>
@@ -78,6 +80,7 @@ namespace RoadSimulator
             this.Title = $"X:{e.GetPosition(this).X}   Y:{e.GetPosition(this).Y}";
         }
 
+        // TODO: usunac metode mouseDown 
         /// <summary>
         /// metoda zatrzymuje lub wznawia animacje wszystkich obiektow istniejacych na canvasie w zaleznosci od wartosci zmiennej pauseresume
         /// </summary>
@@ -111,11 +114,28 @@ namespace RoadSimulator
             {
                 Thread car = new Thread(_Manager.DisplayCar);
                 car.Start();
-
-            }
+           }
 
             Thread train = new Thread(_Manager.DisplayTrain);
             train.Start();
+        }
+/*
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            Application.Current.Shutdown();
+        }
+*/
+
+        /// <summary>
+        /// rozwiazanie wyrzucania Exception przy konczeniu dzialania aplikacji przez dispatchery samochodzikow i pociagu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Manager.ShutingDown = true;                        
         }
     }
 }

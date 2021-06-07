@@ -207,7 +207,9 @@ namespace RoadSimulator
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void TrainAnimationStoryboard_Completed(object sender, EventArgs e)
-        {   //dla kazdego itemu w kolekcji sprawdzany jest stan animacji
+        {   
+            // TODO: usuwac obrazki autek i pociagow po pokonaniu trasy
+            //dla kazdego itemu w kolekcji sprawdzany jest stan animacji
             foreach (var item in Manager.TrainCollection)
             {
                 var state = item.Animator.GetCurrentProgress(mainWindow);

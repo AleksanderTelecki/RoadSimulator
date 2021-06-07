@@ -35,11 +35,18 @@ namespace RoadSimulator
         //timera dla tworzenia nowych obiektow klasy Car
         public DispatcherTimer CarTimer;
         
-        private static Mutex TrainMutex = new Mutex();
+        //private static Mutex TrainMutex = new Mutex();
         private static Mutex CarMutex = new Mutex();
 
-        //boolean test rogatek TEST
-       // static Boolean jestNaPrzejezdzie = false;
+        //polozenie samochodziku na Canvasie - procent ukonczenia przewidzianej dla niego trasy
+        // TODO: zmienic po testach liczbe z 10 na 6
+        public static double [] state= new double [10];
+
+        //zmienna przyjmujaca wartosc true jezeli obiekt klasy Car znajduje sie na przejezdzie kolejowym
+        public static Boolean onThePass = false;
+
+        //by zapobiec wyrzuceniu Exception TEST
+        public static Boolean ShutingDown = false;
 
         /// <summary>
         /// konstruktor klasy Manager przyjmujacy dwa argumenty
@@ -64,7 +71,7 @@ namespace RoadSimulator
             
             //stworzenie timera dla obiektów klasy Car
             CarTimer = new DispatcherTimer();
-            //ustawienie czasu  przerwy miedzy tworzeniem nowych obiektow na 100ms
+            //ustawienie czasu przerwy miedzy tworzeniem nowych obiektow na 100ms
             CarTimer.Interval = TimeSpan.FromMilliseconds(100);
             CarTimer.Tick += CarTimer_Tick;
         }
@@ -77,17 +84,20 @@ namespace RoadSimulator
         private void TrainCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             //jezeli kolekcja jest pusta rogatki sie otwieraja,
-            //i tworzony jest nowy watek z pociagiem.
-            //W przeciwnym wypadku rogatki sie zamykaja
+            //i tworzony jest nowy watek z pociagiem.            
             if (TrainCollection.Count == 0)
             {
                 RailwayGates.OpenGates();
                 new Thread(DisplayTrain).Start();
-            }
-            else if (TrainCollection.Count == 1)
+            }  
+            // TODO: Zdecydowac co z bramkami. Rogatki beda sterowane  w timerze by miec mozliwosc monitorowania olozenia wszystkich obiektow na Canvasie
+            /*   //do usuniecia       
+            else if (TrainCollection.Count == 1) /////////////
             {
-                RailwayGates.CloseGates();
+                RailwayGates.CloseGates();//////////////////////
             }
+            */
+            
         }
 
         /// <summary>
@@ -103,13 +113,13 @@ namespace RoadSimulator
             {                
                 CarTimer.Stop();
 
-                //Nowe Nie Sprawdzone na 100%
-                for (int i = 0; i < 6; i++)
+                // TODO:wrocic do 6 w i < 10
+                for (int i = 0; i < 10; i++)//wrocic do 6 //////////////////////////////////////
                 {
                     Thread car = new Thread(DisplayCar);
                     car.Start();
                 }
-                //^^^^^^^^^^^^^^^^^^^^^^
+                //
             }
             else if(CarCollection.Count==1)
             {
@@ -133,20 +143,24 @@ namespace RoadSimulator
                 var y = Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetY);
 
                 //poloznie obiektow na Canvasie w danej chwili
-                //polozenie obiektow to progres pokonanej przez nie trasy, czyli wartosc od 0 do 1
-                var state = CarCollection[i].Animator.GetCurrentProgress(mainWindow);
-                
+                //polozenie obiektow to ich progres w pokonywaniu przez nie trasy, czyli wartosc od 0 do 1                              
+                state[i] = (double)CarCollection[i].Animator.GetCurrentProgress(mainWindow);
+
                 //obiekt klasy Car zatrzymuje sie, gdy jest wystarczajaco blisko przejazdu i rogatki sa opuszczone                
-                if (RailwayGates.IsClosed && state.Value < 0.27 && state.Value > 0.23)
+                // if (RailwayGates.IsClosed && state.Value < 0.27 && state.Value > 0.23)
+                if (RailwayGates.IsClosed && state[i] < 0.28 && state[i] > 0.26)
                 {
                     CarCollection[i].Animator.SetSpeedRatio(mainWindow, 0);
                     CarCollection[i].Stopped = true;
-                }   
-                //VVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-              //  else if (state.Value>0.28 && state.Value<0.32) {
-              //      jestNaPrzejezdzie = true;
-             //   }
-             //^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                }
+                // TODO: to tylko do testow, pozniej do usuniecia
+                /*
+                else if (state[i] < 0.32 && state[i] > 0.31)
+                {
+                    double zz = state[i];
+                    PauseAllCars();
+                }
+                */               
                 else
                 {
                     //gdy w danym ticku timera rogatki sa podniesione, a pojazd zatrzymany,
@@ -159,11 +173,13 @@ namespace RoadSimulator
 
                     //jezeli samochodzik pokonuje zakret jego aktualna grafika zostaje zmieniona
                     //na obrazek bedacy jej lustrzanym odbiciem 
-                    if (state.Value > 0.27 && state.Value < 0.31 && CarCollection[i].IsRight)
+                    //if (state.Value > 0.27 && state.Value < 0.31 && CarCollection[i].IsRight)
+                    if (state[i] > 0.27 && state[i] < 0.31 && CarCollection[i].IsRight)
                     {
                         CarCollection[i].FlipCar();
                     }
-                    else if (state.Value > 0.57 && !CarCollection[i].IsRight)
+                    //else if (state.Value > 0.57 && !CarCollection[i].IsRight)
+                    else if (state[i] > 0.57 && !CarCollection[i].IsRight)
                     {
                         CarCollection[i].FlipCar();
                     }
@@ -196,12 +212,27 @@ namespace RoadSimulator
                                 //drugi samochod ustawia wlasciwosc Stoped na true by samochod w przypadku
                                 //gdyby byl od niego  szybszy i musial zmiejszyc predkosc przyjal za swoja predkosc 0 a nie 0 - 0/20                                
                                 CarCollection[i].Stopped = true;
-                                //^^^^^^^^^^^^^^^^dopisac
+                                //^^^^^^^^^^^^^^^^dopisac^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
                             }
                         }
                     }
                 }
+
+                //jezeli zaden samochodzik nie znajduje sie na przejezdzie kolejowym, a pociag jest gotowy do drogi, rogatki zostaja zamkniete
+                foreach (double element in state)
+                {
+                    if (element > 0.28 && element < 0.31)
+                    {
+                        onThePass = true;
+                        break;
+                    }
+                }
+                if (RailwayGates.IsClosed && !onThePass)
+                    RailwayGates.CloseGates();
+
+                onThePass = false;
             }
         }
 
@@ -211,7 +242,8 @@ namespace RoadSimulator
         public void LoadCar()
         {
             //maksymalna liczba obiektow klasy Car na Canvasie
-            if (CarCollection.Count>19)//liczba itemow w kolekcji zmieniona na 6 z 20
+            // TODO: wrocic do 6 albo dac 7, do testow 11
+            if (CarCollection.Count>11)//liczba itemow w kolekcji zmieniona na 11 ////
             {
                 return;
             }
@@ -253,12 +285,6 @@ namespace RoadSimulator
         /// </summary>
         public void LoadTrain()
         {
-            //w kolekcji moze istniec tylko jeden pociag
-            if (TrainCollection.Count == 1)
-            {
-                return;
-            }
-
             //utworzenie pociagu i dodanie go na Canvas
             Train train = new Train();            
             AddToCanvas(train);
@@ -269,7 +295,8 @@ namespace RoadSimulator
             {
                 train.TrainSpeed += 0.7;
             }
-
+            // TODO: kalki z samochodzikow, do usuniecia
+            /*
             //jezeli ktorys samochodzik posiada predkosc taka sama jak pociag w petli while ponownie losuje sie predkosc pociagu 
             if (CarCollection.Any(x => x.CarSpeed == train.TrainSpeed) && CarCollection.Count != 0)
             {
@@ -282,6 +309,7 @@ namespace RoadSimulator
                     }
                 }
             }
+            */
             //dodanie pociagu do kolekcji obiektow typu Train
             TrainCollection.Add(train);
             //wywolanie metody poruszajacej pociag po Canvasie
@@ -305,11 +333,12 @@ namespace RoadSimulator
         public void AddToCanvas(Train train)
         {
             MapCanvas.Children.Add(train.TrainImage);
-            Canvas.SetTop(train.TrainImage,  0);//////////////////////////////////////
-            Canvas.SetZIndex(train.TrainImage, 1);////////////////////////////////////////////
-            Canvas.SetLeft(train.TrainImage, 0);/////////////////////////////////////////////////////////
+            Canvas.SetTop(train.TrainImage,  0);
+            Canvas.SetZIndex(train.TrainImage, 1);
+            Canvas.SetLeft(train.TrainImage, 0);
         }
 
+        // TODO: usunac po testach meotde PauseAllCars
         /// <summary>
         ///zatrzymanie animacji dla wszystkich istniejacych w danym momencie na oknie MainWindow obiektow klasy Car 
         /// </summary>
@@ -324,6 +353,7 @@ namespace RoadSimulator
             }
         }
 
+        // TODO: usunac po testach meotde PauseAllTrains
         /// <summary>
         /// //zatrzymanie animacji dla wszystkich istniejacych w danym momencie na oknie MainWindow obiektow klasy Train 
         /// </summary>
@@ -338,6 +368,7 @@ namespace RoadSimulator
             }
         }
 
+        // TODO: usunac po testach meotde ResumeAllCars
         /// <summary>
         /// wzonwienie  animacji dla wszystkich zatrzymanych w danym momencie na oknie MainWindow obiektow klasy Car 
         /// </summary>
@@ -352,6 +383,7 @@ namespace RoadSimulator
             }
         }
 
+        // TODO: usunac po testach meotde ResumeAllTrains
         /// <summary>
         /// wzonwienie  animacji dla wszystkich zatrzymanych w danym momencie na oknie MainWindow obiektow klasy Car 
         /// </summary>
@@ -372,9 +404,14 @@ namespace RoadSimulator
         public void DisplayCar()
         {
             CarMutex.WaitOne();
-            mainWindow.Dispatcher.Invoke(() => {
-                LoadCar();
-            });
+            // TODO: by nie informowalo za pomoca exception ze  akcja dispatchera jest anulowana vvv
+            if (!ShutingDown)//Testowe rozwiazanie, dzialajace (narazie), mozliwie najprostsze
+            {
+                mainWindow.Dispatcher.Invoke(() =>
+                {
+                    LoadCar();
+                });
+            }//
             Thread.Sleep(1000);
             CarMutex.ReleaseMutex();
         }
@@ -385,27 +422,28 @@ namespace RoadSimulator
         /// </summary>
         public void DisplayTrain()
         {
-            //Tutaj exception po zamknieciu okna, rozwiazanie -> zamykniecie okna konczy program 
-            Thread.Sleep(5000);
-            mainWindow.Dispatcher.Invoke(() => {
-              //  while (true)
-               // {
-               //     if (jestNaPrzejezdzie == false)/////////////////////////////
-               //     {
-                        RailwayGates.CloseGates();
-               //         break;
-               //     }/////////////////////////////////////
-              //  }
+            // TODO: Tutaj exception po zamknieciu okna, rozwiazanie -> zamykniecie okna konczy program 
+            
+            Thread.Sleep(4000);
+            RailwayGates.IsClosed = true;
+            //TODO: usunac po testach, wydaje sie zbedne
+            /*          
+            mainWindow.Dispatcher.Invoke(() => {                            
+                RailwayGates.CloseGates();  
             });
-            Thread.Sleep(2000);
-            TrainMutex.WaitOne();//
-
-            mainWindow.Dispatcher.Invoke(() => {
-                LoadTrain();
-            });
+            */
+            Thread.Sleep(500); //by samochodziki na przejezdzie kolejowym zdazyly zjechac, by rogatki mogly sie zamknac, zanim pojawi sie pociag
+                               // TODO: Zmienic czasu by pociag nie pojawial sie od razu po zamknieciu rogatek
+                               // dla testow czas = 300ms
+            if (!ShutingDown)//Testowe rozwiazanie, dzialajace (narazie), mozliwie najprostsze
+            {
+                mainWindow.Dispatcher.Invoke(() =>
+                {
+                    LoadTrain();
+                });
+            }//
            
-            TrainMutex.ReleaseMutex();//
+            
         }
-
     }
 }

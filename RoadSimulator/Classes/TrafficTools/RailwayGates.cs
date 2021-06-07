@@ -25,8 +25,9 @@ namespace RoadSimulator.Classes.TrafficTools
         {  
             MainWindow.RightGates.Source = new BitmapImage(new Uri("./Resources/GateCloseRight.png", UriKind.Relative));
             MainWindow.LeftGates.Source = new BitmapImage(new Uri("./Resources/GateCloseLeft.png", UriKind.Relative));
-            TrafficLights.SetRed();            
-            IsClosed = true;
+            TrafficLights.SetRed();   
+            // TODO: usunac zmiane IsClosed(ustawiana jest w Manager w tickach Timera)
+            //IsClosed = true;
 
         }
 
