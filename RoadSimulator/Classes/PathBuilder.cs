@@ -23,6 +23,7 @@ namespace RoadSimulator
             MapCanvas = canvas;
             this.mainWindow = mainwindow;
         }
+
         /// <summary>
         /// metoda przemiesczajaca obiekty klasy Car po Canvasie
         /// </summary>
@@ -43,8 +44,10 @@ namespace RoadSimulator
 
             //punkt w ktorym pojawiaja sie samochodziki po stworzeniu
             pFigure.StartPoint = new Point(5, 201);
-            //PolyBezierSegment dla poruszania sie po zakretach
+            //PolyBezierSegment dla poruszania sie samochodziku po wyznaczonej sciezce
             PolyBezierSegment pBezierSegment = new PolyBezierSegment();
+
+            // TODO: poprawic troche punkty, zeby autka sie nie zderzaly
 
             //punkty do ktorych kolejno beda dazyly samochodziki z punktu startowego            
             pBezierSegment.Points.Add(new Point(10, 201));
@@ -79,7 +82,9 @@ namespace RoadSimulator
 
             //przesunięcie wygenerowane przez animowaną matrycę beda sumowane z każdym powtórzeniem            
             matrixAnimation.IsOffsetCumulative = true;
-            matrixAnimation.Duration = TimeSpan.FromSeconds(9);
+            // TODO: potestowac predkosc
+            //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+            matrixAnimation.Duration = TimeSpan.FromSeconds(8); // z 9
             //^^^^^predkosc do testowania
 
             //ustawienie animacji dla wlasciwosci MatrixTransform obiektu o wskazanym ID
@@ -89,16 +94,18 @@ namespace RoadSimulator
             //Storyboard kontroluje wszystkie animacje dodane jako jego dzieci
             Storyboard pathAnimationStoryboard = new Storyboard();
             pathAnimationStoryboard.Children.Add(matrixAnimation);
-            //
+            
+            //aktualny progres animacji
             pathAnimationStoryboard.Completed += CarAnimationStoryboard_Completed;
 
             car.Animator = pathAnimationStoryboard;
             car.matrixTransform = matrixAnimation;
 
             pathAnimationStoryboard.Begin(mainWindow,true);
-            //ustalenie predkosci animacji na predkosc animowanego samochodziku
+            //ustalenie predkosci animacji dla animowanego samochodziku
             pathAnimationStoryboard.SetSpeedRatio(mainWindow, car.CarSpeed);
         }
+
         /// <summary>
         /// metoda zawierajaca akcje dla samochodziku, ktory przebyl cala sciezke animacji
         /// </summary>
@@ -110,17 +117,17 @@ namespace RoadSimulator
             {
                 var state = item.Animator.GetCurrentProgress(mainWindow);
                 
-                //jezeli animacja dobiegla konca samochodzik jest ukrywany i usuniety z kolekcji
+                //jezeli animacja dobiegla konca samochodzik jest usuniety z kolekcji oraz z Canvasu
                 if (state.Value==1)
                 {
                     item.Animator.Stop(mainWindow);
-                    item.CarImage.Visibility = Visibility.Hidden;
-                    Manager.CarCollection.Remove(item);
-                    //Add canvas remove children!!!!!!!!!!!!!!!!
+                    MapCanvas.Children.Remove(item.CarImage);                   
+                    Manager.CarCollection.Remove(item);   
                     break;
                 }               
             }
         }
+
         /// <summary>
         /// metoda animujaca obiekty klasy Train
         /// </summary>
@@ -135,11 +142,11 @@ namespace RoadSimulator
             string id = Guid.NewGuid().ToString().Substring(0, 4);
             mainWindow.RegisterName($"ImageMatrixTransform{id}", ImageMatrixTransform);
 
-            //stworzenie sciezki po ktorej beda poruszaly sie samochodziki
+            //stworzenie sciezki po ktorej bedzie poruszal sie pociag
             PathGeometry animationPath = new PathGeometry();
             PathFigure pFigure = new PathFigure();
 
-            //punkt w ktorym pojawiaja sie samochodziki po stworzeniu
+            //PolyBezierSegment do przemieszczania pociagu po wskazanych punktach
             PolyBezierSegment pBezierSegment = new PolyBezierSegment();
 
             //punkty po ktorych bedzie poruszal sie pociag w zaleznosci od wylosowanego dla niego kierunku
@@ -149,6 +156,7 @@ namespace RoadSimulator
 
                     break;
                 case Train.Direction.Left:
+                    //punkt w ktorym pojawi sie pociag zaraz po stworzeniu
                     pFigure.StartPoint = new Point(800, 230);
 
                     pBezierSegment.Points.Add(new Point(700, 230));
@@ -157,7 +165,7 @@ namespace RoadSimulator
 
                     break;
                 case Train.Direction.Right:
-
+                    //punkt w ktorym pojawi sie pociag zaraz po stworzeniu
                     pFigure.StartPoint = new Point(13, 230);
 
                     pBezierSegment.Points.Add(new Point(100, 230));
@@ -174,10 +182,6 @@ namespace RoadSimulator
             //dodanie sciezki do sciezki animacji
             animationPath.Figures.Add(pFigure);
 
-            // Freeze the PathGeometry for performance benefits. Dont know for what ?????????????------ewentalnie sie usunie
-            animationPath.Freeze();//
-            //
-
             //stworzenie instancji klasy MatrixAnimationUsingPath, ktora przesuwa pociag 
             //po sciezce animacji  
             MatrixAnimationUsingPath matrixAnimation = new MatrixAnimationUsingPath();
@@ -185,7 +189,9 @@ namespace RoadSimulator
 
             //przesunięcie wygenerowane przez animowaną matrycę beda sumowane z każdym powtórzeniem   
             matrixAnimation.IsOffsetCumulative = true;
-            matrixAnimation.Duration = TimeSpan.FromSeconds(5);//-----------------------
+            // TODO: predkosc do adjustacji
+            matrixAnimation.Duration = TimeSpan.FromSeconds(8);
+            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                         
             //ustawienie animacji dla wlasciwosci MatrixTransform obiektu o wskazanym ID
             Storyboard.SetTargetName(matrixAnimation, $"ImageMatrixTransform{id}");
@@ -198,31 +204,28 @@ namespace RoadSimulator
 
             train.Animator = pathAnimationStoryboard;
             pathAnimationStoryboard.Begin(mainWindow, true);
-            //ustalenie predkosci animacji na predkosc animowanego samochodziku
-            pathAnimationStoryboard.SetSpeedRatio(mainWindow, train.TrainSpeed);//------------
+            //ustawienie predkosci animacji dla pociagu
+            pathAnimationStoryboard.SetSpeedRatio(mainWindow, train.TrainSpeed);
         }
+
         /// <summary>
-        /// metoda zawierajaca akcje dla obiektu klasy Train, ktory odbyl cala sciezke animacji
+        /// metoda zawierajaca akcje dla obiektu klasy Train, ktory pokonal cala sciezke animacji
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void TrainAnimationStoryboard_Completed(object sender, EventArgs e)
-        {   
-            // TODO: usuwac obrazki autek i pociagow po pokonaniu trasy
+        {  
             //dla kazdego itemu w kolekcji sprawdzany jest stan animacji
             foreach (var item in Manager.TrainCollection)
             {
                 var state = item.Animator.GetCurrentProgress(mainWindow);
 
-                //jezeli animacja dobiegla konca pociag jest ukrywany i usuniety z kolekcji
+                //jezeli animacja dobiegla konca pociag jest usuniety z kolekcji oraz z Canvasu
                 if (state.Value == 1)
                 {
-                    item.Animator.Stop(mainWindow);
-                    item.TrainImage.Visibility = Visibility.Hidden;
+                    item.Animator.Stop(mainWindow);                   
                     Manager.TrainCollection.Remove(item);
-
-                     //Add canvas remove children!!!!!!!!!!!!!!!!
-                    //MapCanvas.Children.Remove(id)
+                    MapCanvas.Children.Remove(item.TrainImage);                 
                     break;
                 }
             }

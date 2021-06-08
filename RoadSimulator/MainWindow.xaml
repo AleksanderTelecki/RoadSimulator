@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="720" Width="930" ResizeMode="CanMinimize" Closing="Window_Closing">
 
-    <Canvas x:Name="MapCanvas" MouseDown="MapCanvas_MouseDown"  >
+    <Canvas x:Name="MapCanvas">
         <Image Panel.ZIndex="0" Source="./Resources/Mapa.png" Width="{Binding Path=ActualWidth, ElementName=MapCanvas}" Height="{Binding Path=ActualHeight, ElementName=MapCanvas}" Stretch="Uniform"></Image>
         <Image Name="RightGates" Panel.ZIndex="1"  Source="./Resources/GateOpenRight.png" Width="130" Height="100" Canvas.Left="605" Canvas.Top="163" />
         <Image Name="LeftGates" Panel.ZIndex="2"  Source="./Resources/GateOpenLeft.png" Width="130" Height="100" Canvas.Left="688" Canvas.Top="226" />

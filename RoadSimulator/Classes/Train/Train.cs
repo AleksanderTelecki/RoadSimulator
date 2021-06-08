@@ -11,6 +11,9 @@ using System.Windows.Media.Imaging;
 
 namespace RoadSimulator.Classes.Train
 {
+    /// <summary>
+    /// klasa definiujaca pociag
+    /// </summary>
     public class Train
     {
         private static Random rnd = new Random();

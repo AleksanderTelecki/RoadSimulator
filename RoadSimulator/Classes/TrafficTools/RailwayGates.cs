@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 namespace RoadSimulator.Classes.TrafficTools
 {  
     /// <summary>
-    /// klasa zawiera metody zmieniajace obrazek rogatek z rogatek zamknietych na rogatki otwarte i z na odwrot
+    /// klasa zawiera metody zmieniajace obrazek rogatek z rogatek zamknietych na rogatki otwarte i z powrotem
     /// </summary>
     public static class RailwayGates
     {      
@@ -18,17 +18,13 @@ namespace RoadSimulator.Classes.TrafficTools
         public static bool IsClosed;
 
         /// <summary>
-        /// metoda zmienia obrazek rogatek otwartych na obrazek z rogatkami zamknietymi, wywoluje metode zmieniajaca kolor sygnalizatora na zielony 
-        /// oraz ustawia wartosc true dla zmiennej IsClosed
+        /// metoda zmienia obrazek rogatek otwartych na obrazek z rogatkami zamknietymi, wywoluje metode zmieniajaca kolor sygnalizatora na zielony     
         /// </summary>
         public static void CloseGates()
         {  
             MainWindow.RightGates.Source = new BitmapImage(new Uri("./Resources/GateCloseRight.png", UriKind.Relative));
             MainWindow.LeftGates.Source = new BitmapImage(new Uri("./Resources/GateCloseLeft.png", UriKind.Relative));
             TrafficLights.SetRed();   
-            // TODO: usunac zmiane IsClosed(ustawiana jest w Manager w tickach Timera)
-            //IsClosed = true;
-
         }
 
         /// <summary>

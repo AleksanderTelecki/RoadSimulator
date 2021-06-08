@@ -11,7 +11,10 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace RoadSimulator
-{
+
+{    /// <summary>
+     /// klasa definiujaca samochodziki
+     /// </summary>
     public class Car
     {
         private static Random rnd = new Random();
@@ -32,11 +35,10 @@ namespace RoadSimulator
 
         public bool Stopped = false;
 
-
         public Car()
         {
             IsRight = true;
-            RandomiseCar();
+            RandomiseCar();           
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace RoadSimulator
                 Width = 40,
             };
 
-            //uspienie watku by losowanie koloru samochodzika mialo sens
+            //uspienie watku by wylosowane kolory dla samochodziku byly rozne
             Thread.Sleep(20);
         }
         /// <summary>
