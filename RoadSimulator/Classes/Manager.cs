@@ -35,7 +35,7 @@ namespace RoadSimulator
         //timera dla tworzenia nowych obiektow klasy Car
         public DispatcherTimer CarTimer;
         
-        //private static Mutex TrainMutex = new Mutex();
+        //mutex  by tylko jeden watek na raz mogl uzywac metody DisplayCar 
         private static Mutex CarMutex = new Mutex();
 
         //polozenie samochodziku na Canvasie - procent ukonczenia przewidzianej dla niego trasy        
@@ -69,10 +69,10 @@ namespace RoadSimulator
             //dodanie obiektow do kolekcji
             TrainCollection.CollectionChanged += TrainCollection_CollectionChanged;
             
-            //stworzenie timera dla obiektów klasy Car
+            //stworzenie timera sprawdzajacych stan animowanych obiektow
             CarTimer = new DispatcherTimer();
-            //ustawienie czasu przerwy miedzy tworzeniem nowych obiektow na 100ms
-            CarTimer.Interval = TimeSpan.FromMilliseconds(100);
+            //ustawienie dlugosci ticku CarTimera
+            CarTimer.Interval = TimeSpan.FromMilliseconds(8); //ustawione na predkosc samochodzikow
             CarTimer.Tick += CarTimer_Tick;
         }
 
@@ -89,7 +89,7 @@ namespace RoadSimulator
             {
                 RailwayGates.OpenGates();
                 new Thread(DisplayTrain).Start();
-            }  
+            }           
         }
 
         /// <summary>
@@ -186,31 +186,30 @@ namespace RoadSimulator
                             // predkosc obiektu o indeksie i jest wieksza od predkosci obiektu go poprzedzajacego(indeks j)                   
                             if (CarCollection[j].CarSpeed < CarCollection[i].CarSpeed || CarCollection[j].Stopped)
                             {
-                                //predkosc obiektu o indeksie i przyjmuje odrobine pomniejszona wartosc predkosci obiektu go poprzedzajacego
+                                //predkosc obiektu o indeksie i przyjmuje jako swoja predkosci odrobine pomniejszona wartosc predkosci obiektu go poprzedzajacego
                                 CarCollection[i].CarSpeed = CarCollection[j].CarSpeed - CarCollection[j].CarSpeed / 20;
-                                //jezeli obiekt poprzedzajacy obiekt o indeksie i zatrzymal sie przed rogatkami to rowniez sie zatrzymuje,
+                                //jezeli obiekt poprzedzajacy obiekt o indeksie i zatrzymal sie przed rogatkami to ten rowniez sie zatrzymuje,
                                 //w przeciwnym razie przyjmuje nowa predkosc
                                 CarCollection[i].Animator.SetSpeedRatio(mainWindow, CarCollection[j].Stopped ? 0 : CarCollection[i].CarSpeed);
                                 
-                                // TODO: redagowac komentarz
-                                //drugi samochod ustawia wlasciwosc Stoped na true by samochod w przypadku
-                                //gdyby byl od niego  szybszy i musial zmiejszyc predkosc przyjal za swoja predkosc 0 a nie 0 - 0/20                                
-                                CarCollection[i].Stopped = true;
-                                //^^^^^^^^^^^^^^^^dopisac^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+                                //samochodzikowi po zmianie predkosci ustawia sie wlasciowsc Stopped na true, by w przypadku przyjecia jako nowa predkosc
+                                //wartosci 0, samochodzik zanim, ktory porusza sie szybciej przyjal jako swoja nowa predkosc 0, a nie wynik dzialania 0 - 0/20                                                      
+                                CarCollection[i].Stopped = true;                               
                             }
                         }
                     }
                 }
-
+                
                 //jezeli zaden samochodzik nie znajduje sie na przejezdzie kolejowym, a pociag jest gotowy do drogi, rogatki zostaja zamkniete
-                foreach (double element in state)
+                if (CarCollection.Count > 0)
                 {
-                    if (element > 0.28 && element < 0.31)
+                    foreach (double element in state)
                     {
-                        onThePass = true;
-                        break;
+                        if (element > 0.28 && element < 0.31)
+                        {
+                            onThePass = true;
+                            break;
+                        }
                     }
                 }
                 if (RailwayGates.IsClosed && !onThePass)
@@ -225,13 +224,6 @@ namespace RoadSimulator
         /// </summary>
         public void LoadCar()
         {
-            //maksymalna liczba obiektow klasy Car na Canvasie
-            
-            if (CarCollection.Count>6)
-            {
-                return;
-            }
-
             //utworzenie instancji klasy Car
             Car car = new Car();
             //dodanie instancji klasy Car do Canvasu
@@ -315,17 +307,19 @@ namespace RoadSimulator
         /// metoda wywoluje metode tworzaca nowy samochodzik sterowany przez osobny watek oraz startuje dla niego timer
         /// </summary>
         public void DisplayCar()
-        { // TODO: Mutex by jeden watek mial doste do tej metody naraz
+        { 
             CarMutex.WaitOne();
             
             if (!shutDownApp)
-            {
+            { 
                 mainWindow.Dispatcher.Invoke(() =>
                 {
                     LoadCar();
                 });
             }
             Thread.Sleep(1000);
+
+            //pozwala nastepnemu watkowi wejsc do metody
             CarMutex.ReleaseMutex();
         }
 
@@ -341,6 +335,7 @@ namespace RoadSimulator
             
             if (!shutDownApp)
             {
+                //metoda zostaje wykonana przez watek bedacy pociagiem 
                 mainWindow.Dispatcher.Invoke(() =>
                 {
                     LoadTrain();

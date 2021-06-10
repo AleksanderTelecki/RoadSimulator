@@ -47,12 +47,10 @@ namespace RoadSimulator
             //PolyBezierSegment dla poruszania sie samochodziku po wyznaczonej sciezce
             PolyBezierSegment pBezierSegment = new PolyBezierSegment();
 
-            // TODO: poprawic troche punkty, zeby autka sie nie zderzaly
-
             //punkty do ktorych kolejno beda dazyly samochodziki z punktu startowego            
             pBezierSegment.Points.Add(new Point(10, 201));
-            pBezierSegment.Points.Add(new Point(300, 201));
-            pBezierSegment.Points.Add(new Point(620, 201));
+            pBezierSegment.Points.Add(new Point(300, 201));          
+            pBezierSegment.Points.Add(new Point(630, 201));
             
             pBezierSegment.Points.Add(new Point(640, 219));
             pBezierSegment.Points.Add(new Point(690, 242));
@@ -82,11 +80,9 @@ namespace RoadSimulator
 
             //przesunięcie wygenerowane przez animowaną matrycę beda sumowane z każdym powtórzeniem            
             matrixAnimation.IsOffsetCumulative = true;
-            // TODO: potestowac predkosc
-            //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            matrixAnimation.Duration = TimeSpan.FromSeconds(8); // z 9
-            //^^^^^predkosc do testowania
-
+            //predkosc animacji samochodzikow
+            matrixAnimation.Duration = TimeSpan.FromSeconds(8);
+            
             //ustawienie animacji dla wlasciwosci MatrixTransform obiektu o wskazanym ID
             Storyboard.SetTargetName(matrixAnimation, $"ImageMatrixTransform{id}");
             Storyboard.SetTargetProperty(matrixAnimation, new PropertyPath(MatrixTransform.MatrixProperty));
@@ -189,9 +185,8 @@ namespace RoadSimulator
 
             //przesunięcie wygenerowane przez animowaną matrycę beda sumowane z każdym powtórzeniem   
             matrixAnimation.IsOffsetCumulative = true;
-            // TODO: predkosc do adjustacji
-            matrixAnimation.Duration = TimeSpan.FromSeconds(8);
-            //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            //predkosc animacji pociagu
+            matrixAnimation.Duration = TimeSpan.FromSeconds(4);
                         
             //ustawienie animacji dla wlasciwosci MatrixTransform obiektu o wskazanym ID
             Storyboard.SetTargetName(matrixAnimation, $"ImageMatrixTransform{id}");
