@@ -15,7 +15,7 @@ namespace RoadSimulator.Classes.TrafficTools
         public static MainWindow MainWindow { get; set; }
 
         /// <summary>
-        /// metoda zmienia kolor obiektu typu Ellipse sluzacej jako sygnalizator przy przejezdzie kolejowym na zielony
+        /// metoda zmienia kolor obiektu typu Ellipse sluzacego jako sygnalizator przy przejezdzie kolejowym na kolor zielony
         /// </summary>
         public static void SetGreen()
         {
@@ -27,7 +27,7 @@ namespace RoadSimulator.Classes.TrafficTools
         }
 
         /// <summary>
-        /// metoda zmienia kolor obiektu typu Ellipse sluzacej jako sygnalizator przy przejezdzie kolejowym na czerwony
+        /// metoda zmienia kolor obiektu typu Ellipse sluzacego jako sygnalizator przy przejezdzie kolejowym na czerwony
         /// </summary>
         public static void SetRed()
         {

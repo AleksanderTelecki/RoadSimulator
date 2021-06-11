@@ -14,11 +14,12 @@ namespace RoadSimulator.Classes.TrafficTools
     public static class RailwayGates
     {      
         public static MainWindow MainWindow { get; set; }
-        //zmienna boolowska okreslajaca czy rogatki sa opuszczone
+
+        //zmienna informujaca czy rogatki powinny byc opuszczone
         public static bool IsClosed;
 
         /// <summary>
-        /// metoda zmienia obrazek rogatek otwartych na obrazek z rogatkami zamknietymi, wywoluje metode zmieniajaca kolor sygnalizatora na zielony     
+        /// metoda zmienia obrazek rogatek otwartych na obrazek z rogatkami zamknietymi, wywoluje metode zmieniajaca kolor sygnalizatora na czerwony     
         /// </summary>
         public static void CloseGates()
         {  

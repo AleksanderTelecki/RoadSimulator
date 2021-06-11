@@ -19,23 +19,19 @@ namespace RoadSimulator
     /// klasa zarzadzajaca wszystkimi wydarzeniami majacymi miejsce na MainWindow
     /// </summary>
     public class Manager
-    {
-        //generator liczb losowych
+    {        
         private Random rnd = new Random();
         public Canvas MapCanvas { get; set; }
         public MainWindow mainWindow { get; set;}
         private PathBuilder pathBuilder { get; set; }
-
-        //kolekcja obiektow typu Car
+                
         public static ObservableCollection<Car> CarCollection { get; set; }
-
-        //kolekcja obiektow typu Train
+                
         public static ObservableCollection<Train> TrainCollection { get; set; }
-
-        //timera dla tworzenia nowych obiektow klasy Car
+                
         public DispatcherTimer CarTimer;
         
-        //mutex  by tylko jeden watek na raz mogl uzywac metody DisplayCar 
+        //mutex  by tylko jeden watek na raz mogl tworzyc samochodzik 
         private static Mutex CarMutex = new Mutex();
 
         //polozenie samochodziku na Canvasie - procent ukonczenia przewidzianej dla niego trasy        
@@ -44,12 +40,12 @@ namespace RoadSimulator
         //zmienna przyjmujaca wartosc true jezeli obiekt klasy Car znajduje sie na przejezdzie kolejowym
         public static Boolean onThePass = false;
 
-        //by zapobiec wyrzuceniu Exception
+        //by zapobiec wyrzuceniu Exception "anulowana akcja" przy dispatcherze samochodziku i pociagu
         public static Boolean shutDownApp = false;
 
 
         /// <summary>
-        /// konstruktor klasy Manager przyjmujacy dwa argumenty
+        /// konstruktor klasy Manager
         /// </summary>
         /// <param name="ImageCanvas"></param>
         /// <param name="mainWindow"></param>
@@ -59,12 +55,12 @@ namespace RoadSimulator
             this.mainWindow = mainWindow;
 
             pathBuilder = new PathBuilder(mainWindow,ImageCanvas);
-            //stworzenie obiektu kolekcji obiektow typu Car
+            //stworzenie kolekcji obiektow typu Car
             CarCollection = new ObservableCollection<Car>();
             //dodanie obiektow do kolekcji
             CarCollection.CollectionChanged += CarCollection_CollectionChanged;
 
-            //stworzenie obiektu kolekcji obiektow typu Train
+            //stworzenie kolekcji obiektow typu Train
             TrainCollection = new ObservableCollection<Train>();
             //dodanie obiektow do kolekcji
             TrainCollection.CollectionChanged += TrainCollection_CollectionChanged;
@@ -72,12 +68,13 @@ namespace RoadSimulator
             //stworzenie timera sprawdzajacych stan animowanych obiektow
             CarTimer = new DispatcherTimer();
             //ustawienie dlugosci ticku CarTimera
-            CarTimer.Interval = TimeSpan.FromMilliseconds(8); //ustawione na predkosc samochodzikow
+            CarTimer.Interval = TimeSpan.FromMilliseconds(8);
             CarTimer.Tick += CarTimer_Tick;
         }
 
         /// <summary>
-        /// metoda wywolywana gdy stan kolekcji obiekt klasy Train ulega zmianie
+        /// metoda wywolywana gdy stan kolekcji obiektow klasy Train ulega zmianie, tworzy pociag
+        /// i otwiera rogatki po przejezdzie poprzedniego pocaigu
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -93,14 +90,14 @@ namespace RoadSimulator
         }
 
         /// <summary>
-        /// metoda wywolywana gdy stan kolekcji obiekt klasy Car ulega zmianie
+        /// metoda wywolywana gdy stan kolekcji obiektow klasy Car ulega zmianie
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CarCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            //jezeli kolekcja jest pusta timer dla obiektow klasy Car sie zatrzymuje.  
-            //gdy do kolekcji dodany jest pierwszy samochod timer dla obiektow klasy Car startuje
+            //jezeli kolekcja jest pusta timer sie zatrzymuje i tworz 6 nowych watkow  
+            //gdy do kolekcji dodany jest pierwszy samochod timer startuje
             if (CarCollection.Count==0)
             {                
                 CarTimer.Stop();
@@ -119,14 +116,13 @@ namespace RoadSimulator
         }
 
         /// <summary>
-        /// metoda wywolywana przy kazdym ticku timera dla obiektow klasy Car
-        /// odpowiadajaca za polozenie obiektow na Canvasie
+        /// metoda wywolywana przy kazdym ticku timera
+        /// odpowiadajaca za akcje podjemowane dla obiektow w zaleznosci od ich aktualnego polozenia na Canvasie
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CarTimer_Tick(object sender, EventArgs e)
-        {
-            //akcje wykonywane dla kazdego obiektu w kolekcji
+        {            
             for (int i = 0; i < CarCollection.Count; i++)
             {
                 //wspolrzedne samochodziku na Canvasie                
@@ -134,7 +130,7 @@ namespace RoadSimulator
                 var y = Math.Round(CarCollection[i].CarImage.RenderTransform.Value.OffsetY);
 
                 //poloznie obiektow na Canvasie w danej chwili
-                //polozenie obiektow to ich progres w pokonywaniu przez nie trasy, czyli wartosc od 0 do 1                              
+                //czylito ich progres w pokonywaniu przez nie trasy, wartosc miedzy 0 a 1                              
                 state[i] = (double)CarCollection[i].Animator.GetCurrentProgress(mainWindow);
 
                 //obiekt klasy Car zatrzymuje sie, gdy jest wystarczajaco blisko przejazdu i rogatki sa opuszczone                          
@@ -146,7 +142,7 @@ namespace RoadSimulator
                 else
                 {
                     //gdy w danym ticku timera rogatki sa podniesione, a pojazd zatrzymany,
-                    //rusza on ze swoja predkoscia przed zatrzymaniem
+                    //rusza on ze swoja predkoscia poprzednia predkoscia
                     if (CarCollection[i].Stopped == true)
                     {
                         CarCollection[i].Stopped = false;
@@ -154,13 +150,11 @@ namespace RoadSimulator
                     }
 
                     //jezeli samochodzik pokonuje zakret jego aktualna grafika zostaje zmieniona
-                    //na obrazek bedacy jej lustrzanym odbiciem 
-                    //if (state.Value > 0.27 && state.Value < 0.31 && CarCollection[i].IsRight)
+                    //na obrazek bedacy jej lustrzanym odbiciem                     
                     if (state[i] > 0.27 && state[i] < 0.31 && CarCollection[i].IsRight)
                     {
                         CarCollection[i].FlipCar();
-                    }
-                    //else if (state.Value > 0.57 && !CarCollection[i].IsRight)
+                    }                    
                     else if (state[i] > 0.57 && !CarCollection[i].IsRight)
                     {
                         CarCollection[i].FlipCar();
@@ -168,8 +162,8 @@ namespace RoadSimulator
 
                     for (int j = 0; j < CarCollection.Count; j++)
                     {
-                        //wyrazenie warunkowe uniemozliwiajace programowi probe pobrania wspolrzednych kolejnego obiektu,
-                        //w momencie gdy na Canvasie istnieje tylko jeden obiekt
+                        //wyrazenie warunkowe uniemozliwiajace programowi podjecie proby pobrania wspolrzednych
+                        //drugiego samochodziku w momencie gdy na Canvasie istnieje tylko pierwszy samochodzik
                         if (j == i)
                         {
                             continue;
@@ -304,7 +298,7 @@ namespace RoadSimulator
         }
 
         /// <summary>
-        /// metoda wywoluje metode tworzaca nowy samochodzik sterowany przez osobny watek oraz startuje dla niego timer
+        /// metoda wywoluje metode tworzaca nowy samochodzik sterowany przez osobny watek
         /// </summary>
         public void DisplayCar()
         { 
@@ -325,7 +319,7 @@ namespace RoadSimulator
 
         /// <summary>
         /// metoda wywoluje metode zamykajaca rogatki 
-        /// po czym wywoluje metode tworzaca pociag sterowany przez osobny watek oraz startuje dla niego timer
+        /// po czym wywoluje metode tworzaca pociag sterowany przez osobny watek
         /// </summary>
         public void DisplayTrain()
         {            
@@ -334,8 +328,7 @@ namespace RoadSimulator
             Thread.Sleep(1500);  
             
             if (!shutDownApp)
-            {
-                //metoda zostaje wykonana przez watek bedacy pociagiem 
+            {                
                 mainWindow.Dispatcher.Invoke(() =>
                 {
                     LoadTrain();

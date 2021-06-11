@@ -30,7 +30,7 @@ namespace RoadSimulator
         /// <param name="car"></param>
         public void MoveCarMatrix(Car car)
         {
-            //stworzenie MatrixTransform przy uzyciu ktoego samochodziki beda przemiszczaly sie po Canvasie
+            //stworzenie MatrixTransform przy uzyciu ktorego samochodziki beda przemiszczaly sie po Canvasie
             MatrixTransform ImageMatrixTransform = new MatrixTransform(); 
             car.CarImage.RenderTransform = ImageMatrixTransform;
 
@@ -77,9 +77,7 @@ namespace RoadSimulator
             //po sciezce animacji             
             MatrixAnimationUsingPath matrixAnimation = new MatrixAnimationUsingPath();
             matrixAnimation.PathGeometry = animationPath;
-
-            //przesunięcie wygenerowane przez animowaną matrycę beda sumowane z każdym powtórzeniem            
-            matrixAnimation.IsOffsetCumulative = true;
+     
             //predkosc animacji samochodzikow
             matrixAnimation.Duration = TimeSpan.FromSeconds(8);
             
@@ -142,7 +140,7 @@ namespace RoadSimulator
             PathGeometry animationPath = new PathGeometry();
             PathFigure pFigure = new PathFigure();
 
-            //PolyBezierSegment do przemieszczania pociagu po wskazanych punktach
+            //PolyBezierSegment przemieszcza pociagu po wskazanych punktach
             PolyBezierSegment pBezierSegment = new PolyBezierSegment();
 
             //punkty po ktorych bedzie poruszal sie pociag w zaleznosci od wylosowanego dla niego kierunku
@@ -183,8 +181,6 @@ namespace RoadSimulator
             MatrixAnimationUsingPath matrixAnimation = new MatrixAnimationUsingPath();
             matrixAnimation.PathGeometry = animationPath;
 
-            //przesunięcie wygenerowane przez animowaną matrycę beda sumowane z każdym powtórzeniem   
-            matrixAnimation.IsOffsetCumulative = true;
             //predkosc animacji pociagu
             matrixAnimation.Duration = TimeSpan.FromSeconds(4);
                         
@@ -204,7 +200,7 @@ namespace RoadSimulator
         }
 
         /// <summary>
-        /// metoda zawierajaca akcje dla obiektu klasy Train, ktory pokonal cala sciezke animacji
+        /// metoda zawierajaca akcje dla obiektu klasy Train, gdy ten pokonal cala sciezke animacji
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
