@@ -182,7 +182,7 @@ namespace RoadSimulator
             matrixAnimation.PathGeometry = animationPath;
 
             //predkosc animacji pociagu
-            matrixAnimation.Duration = TimeSpan.FromSeconds(4);
+            matrixAnimation.Duration = TimeSpan.FromSeconds(8);
                         
             //ustawienie animacji dla wlasciwosci MatrixTransform obiektu o wskazanym ID
             Storyboard.SetTargetName(matrixAnimation, $"ImageMatrixTransform{id}");

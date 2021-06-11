@@ -195,20 +195,18 @@ namespace RoadSimulator
                 }
                 
                 //jezeli zaden samochodzik nie znajduje sie na przejezdzie kolejowym, a pociag jest gotowy do drogi, rogatki zostaja zamkniete
-                if (CarCollection.Count > 0)
+                foreach (double element in state)
                 {
-                    foreach (double element in state)
-                    {
-                        if (element > 0.28 && element < 0.31)
-                        {
+                  if (element > 0.28 && element < 0.31)
+                  {
                             onThePass = true;
                             break;
-                        }
-                    }
+                  }
                 }
                 if (RailwayGates.IsClosed && !onThePass)
+                {
                     RailwayGates.CloseGates();
-
+                }
                 onThePass = false;
             }
         }
@@ -322,11 +320,11 @@ namespace RoadSimulator
         /// po czym wywoluje metode tworzaca pociag sterowany przez osobny watek
         /// </summary>
         public void DisplayTrain()
-        {            
+        { 
             Thread.Sleep(4000);
-            RailwayGates.IsClosed = true;            
-            Thread.Sleep(1500);  
-            
+            RailwayGates.IsClosed = true;                     
+            Thread.Sleep(1000);  
+
             if (!shutDownApp)
             {                
                 mainWindow.Dispatcher.Invoke(() =>
